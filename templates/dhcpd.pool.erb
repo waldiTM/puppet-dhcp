@@ -30,14 +30,25 @@ subnet <%= @network %> netmask <%= @mask %> {
 <% if @gateway && !@gateway.strip.empty? -%>
   option routers <%= @gateway %>;
 <% end -%>
-<% if @static_routes -%>
+<% if @static_routes
+     entries = @static_routes.each_with_index.map do |static_route, i|
+       prefix = static_route['mask'].to_i
+       bytes = [prefix]
+       network_bytes = (prefix + 7) / 8
+       if network_bytes > 0
+         bytes <<= static_route['network'].split('.')[0 .. network_bytes - 1]
+       end
+       bytes <<= static_route['gateway'].split('.')
+       "#{bytes.join(', ')}#{i == @static_routes.size - 1 ? ';' : ','}"
+     end
+-%>
   option rfc3442-classless-static-routes
-<%   @static_routes.each_with_index do |static_route, i| -%>
-    <%= static_route['mask'] %>, <%= static_route['network'].split('.').join(', ') %>, <%= static_route['gateway'].split('.').join(', ') %><%= i == @static_routes.size - 1 ? ';' : ',' %>
+<%   entries.each do |r| -%>
+    <%= r %>
 <%   end -%>
   option ms-classless-static-routes
-<%   @static_routes.each_with_index do |static_route, i| -%>
-    <%= static_route['mask'] %>, <%= static_route['network'].split('.').join(', ') %>, <%= static_route['gateway'].split('.').join(', ') %><%= i == @static_routes.size - 1 ? ';' : ',' %>
+<%   entries.each do |r| -%>
+    <%= r %>
 <%   end -%>
 <% end -%>
 <% if @options.is_a? Array -%>
