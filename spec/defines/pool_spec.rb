@@ -120,7 +120,10 @@ describe 'dhcp::pool' do
             :pxeserver        => '10.0.0.2',
             :mtu              => 9000,
             :domain_name      => 'example.org',
-            :static_routes    => [ { 'mask' => '24', 'network' => '10.0.1.0', 'gateway' => '10.0.0.2' } ],
+            :static_routes    => [
+              { 'mask' => '24', 'network' => '10.0.1.0', 'gateway' => '10.0.0.2' },
+              { 'mask' => '24', 'network' => '10.0.2.0', 'gateway' => '10.0.0.2' },
+            ],
             :search_domains   => ['example.org', 'other.example.org'],
           } end
 
@@ -135,8 +138,12 @@ describe 'dhcp::pool' do
               "  option domain-name \"example.org\";",
               "  option subnet-mask 255.255.255.0;",
               "  option routers 10.0.0.1;",
-              "  option rfc3442-classless-static-routes 24, 10, 0, 1, 0, 10, 0, 0, 2;",
-              "  option ms-classless-static-routes  24, 10, 0, 1, 0, 10, 0, 0, 2;",
+              "  option rfc3442-classless-static-routes",
+              "    24, 10, 0, 1, 0, 10, 0, 0, 2,",
+              "    24, 10, 0, 2, 0, 10, 0, 0, 2;",
+              "  option ms-classless-static-routes",
+              "    24, 10, 0, 1, 0, 10, 0, 0, 2,",
+              "    24, 10, 0, 2, 0, 10, 0, 0, 2;",
               "  option ntp-servers 10.0.0.2;",
               "  max-lease-time 300;",
               "  option domain-name-servers 10.0.0.2, 10.0.0.4;",
