@@ -39,7 +39,7 @@ subnet <%= @network %> netmask <%= @mask %> {
          bytes <<= static_route['network'].split('.')[0 .. network_bytes - 1]
        end
        bytes <<= static_route['gateway'].split('.')
-       "#{bytes.join(', ')}#{i == @static_routes.size - 1 ? ';' : ','}"
+       "#{bytes.join(', ')}#{i == @static_routes.size - 1 ? ';' : ','}  \# #{static_route['network']}/#{static_route['mask']} => #{static_route['gateway']}"
      end
 -%>
   option rfc3442-classless-static-routes
